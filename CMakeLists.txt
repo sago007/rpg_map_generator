@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8.9)
+project (rpg_map_generator)
+find_package(Boost COMPONENTS program_options REQUIRED)
+add_executable(rpg_map_generator src/rpg_map_generator.cpp src/sagomap/SagoMapGenerator.cpp)
+TARGET_LINK_LIBRARIES( rpg_map_generator ${Boost_LIBRARIES} )
