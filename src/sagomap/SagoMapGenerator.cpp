@@ -1,9 +1,7 @@
 #include "SagoMapGenerator.hpp"
 
 
-
-sago::mapgenerator::SagoMapGenerator::SagoMapGenerator() {
-	SagoMapGenerator(100, 100);
+sago::mapgenerator::SagoMapGenerator::SagoMapGenerator() : SagoMapGenerator(100, 100) {
 }
 
 sago::mapgenerator::SagoMapGenerator::SagoMapGenerator(int sizeX, int sizeY) {

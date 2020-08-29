@@ -25,10 +25,10 @@ int main(int argc, const char* argv[]) {
 		return 0;
 	}
 	sago::mapgenerator::SagoMapGenerator smg;
-	int worldSize = 100;
-	for (int i = 0; i < worldSize; ++i) {
-		for (int j = 0; j < worldSize; ++j) {
-			std::cout << "X";
+	//smg.FillAll();
+	for (int i = 0; i < smg.worldSizeX; ++i) {
+		for (int j = 0; j < smg.worldSizeY; ++j) {
+			std::cout << smg.getTile(i, j);
 		}
 		std::cout << "\n";
 	}
