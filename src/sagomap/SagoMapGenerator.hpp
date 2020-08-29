@@ -6,6 +6,12 @@ namespace mapgenerator {
 struct Point {
 	int x = 0;
 	int y = 0;
+	Point() = default;
+	Point(int x, int y) : x(x),y(y) {}
+	void set_value(int x, int y) {
+		this->x = x;
+		this->y = y;
+	}
 };
 
 struct Room {
@@ -32,6 +38,9 @@ class SagoMapGenerator {
 	public:
 	int worldSizeX = 100;
 	int worldSizeY = 100;
+	int minRoomSize = 10;
+	int maxRoomSize = 30;
+	int maxNumberOfRooms = 20;
 	char getTile(int x, int y) {
 		return world.at(x*worldSizeY+y);
 	}
@@ -39,6 +48,9 @@ class SagoMapGenerator {
 	void FillAll(char standardTile = 'X');
 	SagoMapGenerator();
 	SagoMapGenerator(int sizeX, int sizeY);
+	void placeRoom();
+	void carveRooms();
+	void placeRooms();
 };
 
 

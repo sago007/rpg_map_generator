@@ -25,6 +25,8 @@ int main(int argc, const char* argv[]) {
 		return 0;
 	}
 	sago::mapgenerator::SagoMapGenerator smg;
+	smg.placeRooms();
+	smg.carveRooms();
 	//smg.FillAll();
 	for (int i = 0; i < smg.worldSizeX; ++i) {
 		for (int j = 0; j < smg.worldSizeY; ++j) {
