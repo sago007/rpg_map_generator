@@ -59,8 +59,11 @@ void sago::mapgenerator::SagoMapGenerator::carvePath(Point from, Point to) {
 
 	// Carve horizontal corridor first
 	while (x != to.x) {
-		if (x < to.x) x++;
-		else x--;
+		if (x < to.x) {
+			x++;
+		} else {
+			x--;
+		}
 		if (x >= 0 && x < worldSizeX && y >= 0 && y < worldSizeY) {
 			world.at(x*worldSizeY+y) = ' ';
 		}
@@ -68,8 +71,11 @@ void sago::mapgenerator::SagoMapGenerator::carvePath(Point from, Point to) {
 
 	// Then carve vertical corridor
 	while (y != to.y) {
-		if (y < to.y) y++;
-		else y--;
+		if (y < to.y) {
+			y++;
+		} else {
+			y--;
+		}
 		if (x >= 0 && x < worldSizeX && y >= 0 && y < worldSizeY) {
 			world.at(x*worldSizeY+y) = ' ';
 		}
