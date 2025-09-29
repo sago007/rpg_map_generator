@@ -1,5 +1,7 @@
 #include "SagoMapGenerator.hpp"
 #include <random>
+#include <cmath>
+#include <limits>
 
 
 sago::mapgenerator::SagoMapGenerator::SagoMapGenerator() : SagoMapGenerator(100, 100) {
@@ -48,5 +50,103 @@ void sago::mapgenerator::SagoMapGenerator::carveRooms() {
 void sago::mapgenerator::SagoMapGenerator::placeRooms() {
 	for (int i=0; i < maxNumberOfRooms; ++i) {
 		placeRoom();
+	}
+}
+
+void sago::mapgenerator::SagoMapGenerator::carvePath(Point from, Point to) {
+	int x = from.x;
+	int y = from.y;
+
+	// Carve horizontal corridor first
+	while (x != to.x) {
+		if (x < to.x) x++;
+		else x--;
+		if (x >= 0 && x < worldSizeX && y >= 0 && y < worldSizeY) {
+			world.at(x*worldSizeY+y) = ' ';
+		}
+	}
+
+	// Then carve vertical corridor
+	while (y != to.y) {
+		if (y < to.y) y++;
+		else y--;
+		if (x >= 0 && x < worldSizeX && y >= 0 && y < worldSizeY) {
+			world.at(x*worldSizeY+y) = ' ';
+		}
+	}
+}
+
+bool sago::mapgenerator::SagoMapGenerator::areRoomsConnected(size_t roomIndex1, size_t roomIndex2, const std::vector<std::vector<bool>>& connected) const {
+	std::vector<bool> visited(rooms.size(), false);
+	std::vector<size_t> stack;
+
+	stack.push_back(roomIndex1);
+	visited[roomIndex1] = true;
+
+	while (!stack.empty()) {
+		size_t current = stack.back();
+		stack.pop_back();
+
+		if (current == roomIndex2) {
+			return true;
+		}
+
+		for (size_t i = 0; i < rooms.size(); ++i) {
+			if (!visited[i] && connected[current][i]) {
+				visited[i] = true;
+				stack.push_back(i);
+			}
+		}
+	}
+
+	return false;
+}
+
+double sago::mapgenerator::SagoMapGenerator::getDistanceBetweenRooms(const Room& room1, const Room& room2) const {
+	Point center1 = room1.getMiddle();
+	Point center2 = room2.getMiddle();
+	double dx = center2.x - center1.x;
+	double dy = center2.y - center1.y;
+	return std::sqrt(dx * dx + dy * dy);
+}
+
+void sago::mapgenerator::SagoMapGenerator::generatePaths() {
+	std::vector<std::vector<bool>> connected(rooms.size(), std::vector<bool>(rooms.size(), false));
+
+	// Initialize connectivity for touching rooms
+	for (size_t i = 0; i < rooms.size(); ++i) {
+		connected[i][i] = true;
+		for (size_t j = i + 1; j < rooms.size(); ++j) {
+			if (rooms[i].isTouching(rooms[j])) {
+				connected[i][j] = true;
+				connected[j][i] = true;
+			}
+		}
+	}
+
+	// Connect each room to its closest unconnected room
+	for (size_t i = 0; i < rooms.size(); ++i) {
+		double minDistance = std::numeric_limits<double>::max();
+		size_t closestRoom = SIZE_MAX;
+
+		// Find the closest room that is not connected
+		for (size_t j = 0; j < rooms.size(); ++j) {
+			if (i != j && !rooms[i].isTouching(rooms[j]) && !areRoomsConnected(i, j, connected)) {
+				double distance = getDistanceBetweenRooms(rooms[i], rooms[j]);
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestRoom = j;
+				}
+			}
+		}
+
+		// Connect to the closest room if one was found
+		if (closestRoom != SIZE_MAX) {
+			Point center1 = rooms[i].getMiddle();
+			Point center2 = rooms[closestRoom].getMiddle();
+			carvePath(center1, center2);
+			connected[i][closestRoom] = true;
+			connected[closestRoom][i] = true;
+		}
 	}
 }

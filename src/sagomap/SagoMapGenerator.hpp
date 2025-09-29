@@ -18,16 +18,21 @@ struct Room {
 	Point upperLeft;
 	Point lowerRight;
 
-	Point getMiddle() {
+	Point getMiddle() const {
 		Point p;
-		p.x = lowerRight.x - upperLeft.x;
-		p.y = lowerRight.y - upperLeft.x;
+		p.x = (lowerRight.x + upperLeft.x) / 2;
+		p.y = (lowerRight.y + upperLeft.y) / 2;
 		return p;
 	}
 
 	bool intersects( const Room& room) {
 		return (upperLeft.x <= room.lowerRight.x && lowerRight.x >= room.upperLeft.x &&
             upperLeft.y <= room.lowerRight.y && room.lowerRight.y >= room.upperLeft.y);
+	}
+
+	bool isTouching(const Room& room) {
+		return (upperLeft.x <= room.lowerRight.x + 1 && lowerRight.x + 1 >= room.upperLeft.x &&
+            upperLeft.y <= room.lowerRight.y + 1 && lowerRight.y + 1 >= room.upperLeft.y) && !intersects(room);
 	}
 };
 
@@ -51,6 +56,10 @@ class SagoMapGenerator {
 	void placeRoom();
 	void carveRooms();
 	void placeRooms();
+	void generatePaths();
+	void carvePath(Point from, Point to);
+	bool areRoomsConnected(size_t roomIndex1, size_t roomIndex2, const std::vector<std::vector<bool>>& connected) const;
+	double getDistanceBetweenRooms(const Room& room1, const Room& room2) const;
 };
 
 
